@@ -1,6 +1,6 @@
 import enum
 from flask_login import UserMixin
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from app import db
 from sqlalchemy import Column,Integer,String,ForeignKey,Float,Boolean,Enum,DateTime
 from datetime import datetime
@@ -12,8 +12,11 @@ class UserRoleEnum(enum.Enum):
 
 class BaseModel(db.Model):
     __abstract__ = True
-
+    active=True
     id = Column(Integer, primary_key=True, autoincrement=True)
+    date_created = datetime.now()
+
+
 
 class User(BaseModel, UserMixin):
     # id = Column(Integer, primary_key=True, autoincrement=True)
@@ -25,22 +28,30 @@ class User(BaseModel, UserMixin):
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
     receipts = relationship('Receipt', backref='user', lazy=True)
     comments = relationship('Comment', backref='user', lazy=True)
+    like = relationship('Like', backref='user', lazy=True)
 
     def __str__(self):
         return self.name
 
 class Category(BaseModel):
-    __tablename__ = 'category'
-
     # id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=True)
-    products = relationship('Product', backref='category', lazy=True)
+    book = relationship('Book', backref='category', lazy=True)
 
     def __str__(self):
         return self.name
 
+book_tag = db.Table('book_tag',
+                    Column('book_id', ForeignKey('book.id'), nullable=False, primary_key=True),
+                    Column('tag_id', ForeignKey('tag.id'), nullable=False, primary_key=True))
 
-class Product(BaseModel):
+class Tag(BaseModel):
+    name = Column(String(50), nullable=False, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class Book(BaseModel):
     # id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=True)
     price = Column(Float, default=0)
@@ -48,28 +59,42 @@ class Product(BaseModel):
                    default='https://reviewmaydocsach.com/wp-content/uploads/2022/08/cai-dung-cua-thanh-nhan-nguyen-duy-can.jpg')
     quantity=Column(Integer, default=0)
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
-    receipt_details = relationship('ReceiptDetails', backref='product', lazy=True)
+    receipt_details = relationship('ReceiptDetails', backref='book', lazy=True)
+    comments = relationship('Comment', backref='book', lazy=True)
+    tags = relationship('Tag', secondary='book_tag', lazy='subquery',
+                        backref=backref('book', lazy=True))
+    like = relationship('Like', backref='book', lazy=True)
+    preview = relationship('Preview', backref='book', lazy=True)
     book_author = relationship('BookAuthor', backref='product', lazy=True)
-    comments = relationship('Comment', backref='product', lazy=True)
     def __str__(self):
         return self.name
+
+
+
+class Interaction(BaseModel):
+    __abstract__ = True
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+
+
 
 class Author(BaseModel):
     name = Column(String(50), nullable=True)
     biography = Column(String(50), nullable=True)
     country = Column(String(50), nullable=True)
     birthday = Column(DateTime, nullable=True)
+
     book_author = relationship('BookAuthor', backref='author', lazy=True)
     def __str__(self):
         return self.name
 
 class BookAuthor(BaseModel):
-    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
     author_id = Column(Integer, ForeignKey(Author.id), nullable=False)
 
 class Receipt(BaseModel):
     status = Column(Boolean, default=False)
-    created_date = Column(DateTime, default=datetime.now())
+
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     details = relationship('ReceiptDetails', backref='receipt', lazy=True)
 
@@ -77,14 +102,19 @@ class Receipt(BaseModel):
 class ReceiptDetails(BaseModel):
     quantity = Column(Integer, default=0)
     price = Column(Float, default=0)
-    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
     receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
 
-class Comment(BaseModel):
+class Preview(BaseModel):
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)
+class Comment(Interaction):
     content = Column(String(255), nullable=False)
-    created_date = Column(DateTime, default=datetime.now())
-    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+
+class Like(Interaction):
+    def __str__(self):
+        return self.name
+
 
 
 if __name__=='__main__':
@@ -100,11 +130,11 @@ if __name__=='__main__':
         db.session.add(c3)
         db.session.commit()
 
-        p1 = Product(name='Predictably Irrational', price=210000,quantity=10,category_id=1)
-        p2 = Product(name='How Pschycology Works', price=250000,quantity=12, category_id=1)
+        p1 = Book(name='Predictably Irrational', price=210000,quantity=10,category_id=1)
+        p2 = Book(name='How Pschycology Works', price=250000,quantity=12, category_id=1)
         # # p3 = Product(name='Cái dũng của thánh nhân', auhor_name='Nguyễn Duy Cần',price=240000, category_id=2)
         # p4 = Product(name='Toán học cao cấp', auhor_name='Trần Trung Kiệt',price=290000, category_id=2)
-        p5 = Product(name='Finance Wheel', price=25000,quantity=12, category_id=3)
+        p5 = Book(name='Finance Wheel', price=25000,quantity=12, category_id=3)
         db.session.add_all([p1,p2,p5])
         db.session.commit()
 
@@ -116,10 +146,11 @@ if __name__=='__main__':
         db.session.add_all([a1,a2,a5])
         db.session.commit()
 
-        ba1=BookAuthor(product_id=1,author_id=1)
-        ba2=BookAuthor(product_id=1,author_id=2)
-        ba3=BookAuthor(product_id=2,author_id=2)
-        ba4=BookAuthor(product_id=3,author_id=3)
+        ba1=BookAuthor(book_id=1,author_id=1)
+        ba2=BookAuthor(book_id=1,author_id=2)
+        ba3=BookAuthor(book_id=2,author_id=2)
+        ba4=BookAuthor(book_id=3,author_id=3)
+
         db.session.add_all([ba1,ba2,ba3,ba4])
         db.session.commit()
         import hashlib
@@ -135,8 +166,8 @@ if __name__=='__main__':
         db.session.add(u)
         db.session.commit()
 
-        c1 = Comment(content='Good', user_id=1, product_id=1)
-        c2 = Comment(content='Nice', user_id=1, product_id=1)
+        c1 = Comment(content='Good', user_id=1, book_id=1)
+        c2 = Comment(content='Nice', user_id=1, book_id=1)
         db.session.add_all([c1, c2])
         db.session.commit()
 
