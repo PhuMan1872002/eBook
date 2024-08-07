@@ -51,6 +51,12 @@ class Tag(BaseModel):
     def __str__(self):
         return self.name
 
+book_author = db.Table('book_author',
+                    db.Column('book_id', db.Integer, db.ForeignKey('book.id'),nullable=False, primary_key=True),
+                    db.Column('author_id', db.Integer, db.ForeignKey('author.id'),nullable=False, primary_key=True)
+                    )
+
+
 class Book(BaseModel):
     # id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=True)
@@ -65,7 +71,7 @@ class Book(BaseModel):
                         backref=backref('book', lazy=True))
     like = relationship('Like', backref='book', lazy=True)
     preview = relationship('Preview', backref='book', lazy=True)
-    book_author = relationship('BookAuthor', backref='product', lazy=True)
+    
     def __str__(self):
         return self.name
 
@@ -84,13 +90,12 @@ class Author(BaseModel):
     country = Column(String(50), nullable=True)
     birthday = Column(DateTime, nullable=True)
 
-    book_author = relationship('BookAuthor', backref='author', lazy=True)
+    book_author = db.relationship('Book', secondary=book_author, backref='author')
     def __str__(self):
         return self.name
 
-class BookAuthor(BaseModel):
-    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    author_id = Column(Integer, ForeignKey(Author.id), nullable=False)
+
+
 
 class Receipt(BaseModel):
     status = Column(Boolean, default=False)
@@ -146,12 +151,11 @@ if __name__=='__main__':
         db.session.add_all([a1,a2,a5])
         db.session.commit()
 
-        ba1=BookAuthor(book_id=1,author_id=1)
-        ba2=BookAuthor(book_id=1,author_id=2)
-        ba3=BookAuthor(book_id=2,author_id=2)
-        ba4=BookAuthor(book_id=3,author_id=3)
+        a1.book_author.append(p1)
+        a2.book_author.append(p2)
+        a5.book_author.append(p5)
 
-        db.session.add_all([ba1,ba2,ba3,ba4])
+
         db.session.commit()
         import hashlib
         u = User(name='Admin', username='admin', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),user_role=UserRoleEnum.ADMIN)
