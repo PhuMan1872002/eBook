@@ -1,3 +1,12 @@
+from flask import request, session
+
+
+def get_locale():
+    if request.args.get('lang'):
+        session['lang'] = request.args.get('lang')
+    return session.get('lang', 'en')
+
+
 def cart_stats(cart):
     total_amount, total_quantity = 0, 0
 
