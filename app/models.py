@@ -1,49 +1,51 @@
 import enum
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy.orm import relationship, backref
-from app import db
-from sqlalchemy import Column,Integer,String,ForeignKey,Float,Boolean,Enum,DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Enum, DateTime, Text
 from datetime import datetime
 
-class UserRoleEnum(enum.Enum):
+db = SQLAlchemy()
+
+class RoleEnum(enum.Enum):
     USER = 1
     ADMIN = 2
     EMPLOYEE = 3
+    
 
 class BaseModel(db.Model):
     __abstract__ = True
-    active=True
+    
     id = Column(Integer, primary_key=True, autoincrement=True)
-    date_created = datetime.now()
-
+    active = Column(Boolean, default=True)
+    date_created = Column(DateTime, default=datetime.now())
 
 
 class User(BaseModel, UserMixin):
-    # id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
+    first_name = Column(String(50), nullable=True)
+    last_name = Column(String(50), nullable=True)
     username = Column(String(50), nullable=False, unique=True)
-    password = Column(String(100), nullable=False)
-    avatar = Column(String(100),
-                    default='https://res.cloudinary.com/dxxwcby8l/image/upload/v1688179242/hclq65mc6so7vdrbp7hz.jpg')
-    user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
-    receipts = relationship('Receipt', backref='user', lazy=True)
-    comments = relationship('Comment', backref='user', lazy=True)
-    like = relationship('Like', backref='user', lazy=True)
+    email = Column(String(100), nullable=False, unique=True)
+    password = Column(Text, nullable=False)
+    avatar = Column(Text, default=None)
+    role = Column(Enum(RoleEnum), default=RoleEnum.USER)
 
     def __str__(self):
-        return self.name
+        return self.username
+
 
 class Category(BaseModel):
-    # id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=True)
     book = relationship('Book', backref='category', lazy=True)
 
     def __str__(self):
         return self.name
 
+
 book_tag = db.Table('book_tag',
                     Column('book_id', ForeignKey('book.id'), nullable=False, primary_key=True),
                     Column('tag_id', ForeignKey('tag.id'), nullable=False, primary_key=True))
+
 
 class Tag(BaseModel):
     name = Column(String(50), nullable=False, unique=True)
@@ -51,160 +53,12 @@ class Tag(BaseModel):
     def __str__(self):
         return self.name
 
-book_author = db.Table('book_author',
-                    db.Column('book_id', db.Integer, db.ForeignKey('book.id'),nullable=False, primary_key=True),
-                    db.Column('author_id', db.Integer, db.ForeignKey('author.id'),nullable=False, primary_key=True)
-                    )
-
 
 class Book(BaseModel):
-    # id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=True)
-    price = Column(Float, default=0)
-    image = Column(String(100),
-                   default='https://reviewmaydocsach.com/wp-content/uploads/2022/08/cai-dung-cua-thanh-nhan-nguyen-duy-can.jpg')
-    quantity=Column(Integer, default=0)
-    category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
-    receipt_details = relationship('ReceiptDetails', backref='book', lazy=True)
-    comments = relationship('Comment', backref='book', lazy=True)
-    tags = relationship('Tag', secondary='book_tag', lazy='subquery',
-                        backref=backref('book', lazy=True))
-    like = relationship('Like', backref='book', lazy=True)
-    preview = relationship('Preview', backref='book', lazy=True)
+    title = Column(String(80), unique=True)
+    price = Column(Float, default=0.00)
+    image = Column(Text, default=None)
+    category_id = Column(Integer, ForeignKey(Category.id))
     
     def __str__(self):
         return self.name
-
-
-
-class Interaction(BaseModel):
-    __abstract__ = True
-    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-
-
-
-class Author(BaseModel):
-    name = Column(String(50), nullable=True)
-    biography = Column(String(50), nullable=True)
-    country = Column(String(50), nullable=True)
-    birthday = Column(DateTime, nullable=True)
-
-    book_author = db.relationship('Book', secondary=book_author, backref='author')
-    def __str__(self):
-        return self.name
-
-
-
-
-class Receipt(BaseModel):
-    status = Column(Boolean, default=False)
-
-    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    details = relationship('ReceiptDetails', backref='receipt', lazy=True)
-
-
-class ReceiptDetails(BaseModel):
-    quantity = Column(Integer, default=0)
-    price = Column(Float, default=0)
-    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
-
-class Preview(BaseModel):
-    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    image_url = db.Column(db.String(255), nullable=False)
-class Comment(Interaction):
-    content = Column(String(255), nullable=False)
-
-class Like(Interaction):
-    def __str__(self):
-        return self.name
-
-
-
-if __name__=='__main__':
-    from app import app
-    with app.app_context():
-        db.create_all()
-
-        c1 = Category(name='Sách tâm lý')
-        c2 = Category(name='Sách giáo dục')
-        c3 = Category(name='Sách tài chính')
-        db.session.add(c1)
-        db.session.add(c2)
-        db.session.add(c3)
-        db.session.commit()
-
-        p1 = Book(name='Predictably Irrational', price=210000,quantity=10,category_id=1)
-        p2 = Book(name='How Pschycology Works', price=250000,quantity=12, category_id=1)
-        # # p3 = Product(name='Cái dũng của thánh nhân', auhor_name='Nguyễn Duy Cần',price=240000, category_id=2)
-        # p4 = Product(name='Toán học cao cấp', auhor_name='Trần Trung Kiệt',price=290000, category_id=2)
-        p5 = Book(name='Finance Wheel', price=25000,quantity=12, category_id=3)
-        db.session.add_all([p1,p2,p5])
-        db.session.commit()
-
-        a1 = Author(name='Lionel Messi', biography='Football Player',country='Argentina')
-        a2 = Author(name='Cristiano Ronaldo', biography='Football Player',country='Portugal')
-        # # p3 = Product(name='Cái dũng của thánh nhân', auhor_name='Nguyễn Duy Cần',price=240000, category_id=2)
-        # p4 = Product(name='Toán học cao cấp', auhor_name='Trần Trung Kiệt',price=290000, category_id=2)
-        a5 = Author(name='Neymar Jr', biography='Football Player',country='Brazil')
-        db.session.add_all([a1,a2,a5])
-        db.session.commit()
-
-        a1.book_author.append(p1)
-        a2.book_author.append(p2)
-        a5.book_author.append(p5)
-
-
-        db.session.commit()
-        import hashlib
-        u = User(name='Admin', username='admin', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),user_role=UserRoleEnum.ADMIN)
-        db.session.add(u)
-        db.session.commit()
-        import hashlib
-        u = User(name='Thu', username='Employee', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),user_role=UserRoleEnum.EMPLOYEE)
-        db.session.add(u)
-        db.session.commit()
-        import hashlib
-        u = User(name='Nhi', username='user', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),user_role=UserRoleEnum.USER)
-        db.session.add(u)
-        db.session.commit()
-
-        c1 = Comment(content='Good', user_id=1, book_id=1)
-        c2 = Comment(content='Nice', user_id=1, book_id=1)
-        db.session.add_all([c1, c2])
-        db.session.commit()
-
-        # r1=Receipt(created_date='2024-1-1',user_id=1,status=True)
-        # r2=Receipt(created_date='2024-1-23',user_id=2,status=True)
-        # r3=Receipt(created_date='2024-2-1',user_id=3,status=True)
-        # r4=Receipt(created_date='2024-2-4',user_id=1,status=True)
-        # r5=Receipt(created_date='2024-3-1',user_id=1,status=True)
-        # r6=Receipt(created_date='2023-12-1',user_id=1,status=True)
-        # db.session.add_all([r1,r2,r3,r4,r5,r6])
-        # db.session.commit()
-
-        # rd1=ReceiptDetails(product_id=1,receipt_id=1)
-        # rd2=ReceiptDetails(product_id=2,receipt_id=1)
-        # rd3=ReceiptDetails(product_id=3,receipt_id=1)
-        # rd4=ReceiptDetails(product_id=3,receipt_id=1)
-        # rd5=ReceiptDetails(product_id=2,receipt_id=2)
-        # rd6=ReceiptDetails(product_id=3,receipt_id=2)
-        # rd7=ReceiptDetails(product_id=2,receipt_id=2)
-        # rd8=ReceiptDetails(product_id=1,receipt_id=2)
-        # rd9=ReceiptDetails(product_id=1,receipt_id=3)
-        # rd10=ReceiptDetails(product_id=2,receipt_id=3)
-        # rd11=ReceiptDetails(product_id=3,receipt_id=3)
-        # rd12=ReceiptDetails(product_id=3,receipt_id=4)
-        # rd13=ReceiptDetails(product_id=2,receipt_id=4)
-        # rd14=ReceiptDetails(product_id=3,receipt_id=4)
-        # rd15=ReceiptDetails(product_id=2,receipt_id=5)
-        # rd16=ReceiptDetails(product_id=1,receipt_id=5)
-        # rd17=ReceiptDetails(product_id=1,receipt_id=5)
-        # rd18=ReceiptDetails(product_id=1,receipt_id=6)
-        # rd19=ReceiptDetails(product_id=1,receipt_id=6)
-        # rd20=ReceiptDetails(product_id=1,receipt_id=6)
-        # rd21=ReceiptDetails(product_id=2,receipt_id=6)
-        # rd22=ReceiptDetails(product_id=3,receipt_id=6)
-        # db.session.add_all([rd1,rd2,rd3,rd4,rd5,rd6,rd7,rd8,rd9,rd10,rd11,rd12,rd13,rd14,rd15,rd16,rd17,rd18,rd19,rd20,rd21,rd22])
-        # db.session.commit()

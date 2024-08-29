@@ -1,43 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eBook 📖</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Welcome to eBook Store</h1>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/books">Books</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section class="featured-books">
-            <h2>Featured Books</h2>
-            <div class="book-list">
-                <article class="book-item">
-                    <img src="{{ url_for('static', filename='images/book1.jpg') }}" alt="Book 1">
-                    <h3>Book Title 1</h3>
-                    <p>Author: Author 1</p>
-                </article>
-                <article class="book-item">
-                    <img src="{{ url_for('static', filename='images/book2.jpg') }}" alt="Book 2">
-                    <h3>Book Title 2</h3>
-                    <p>Author: Author 2</p>
-                </article>
-                <!-- Add more book items here -->
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 eBook Store. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+{% extends 'layouts/base.html' %} {% block content %}
+<section>
+	<h2>Featured Books</h2>
+	<div>
+		<article>
+			<img
+				src="{{ url_for('static', filename='images/book1.jpg') }}"
+				alt="Book 1" />
+			<h3>Book Title 1</h3>
+			<p>Author: Author 1</p>
+		</article>
+		<article>
+			<img
+				src="{{ url_for('static', filename='images/book2.jpg') }}"
+				alt="Book 2" />
+			<h3>Book Title 2</h3>
+			<p>Author: Author 2</p>
+		</article>
+	</div>
+</section>
+{% endblock %}

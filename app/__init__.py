@@ -1,18 +1,14 @@
 from flask import Flask
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from urllib.parse import quote
 from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
-
+from app import config
+from .admin import admin_manager
+from .models import db
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/ebookdb?charset=utf8mb4" % quote(
-    "123456")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config.from_object(config.DevelopmentConfig)
 
-
-db = SQLAlchemy(app=app)
-
-login = LoginManager(app=app)
-
+db.init_app(app=app)
+login_manager = LoginManager(app=app)
+migrate = Migrate(db=db, app=app, render_as_batch=True)
+admin_manager.init_app(app=app)
