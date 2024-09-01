@@ -1,74 +1,61 @@
 <header>
-	<nav
-		class="navbar navbar-expand-lg bg-primary"
-		data-bs-theme="dark">
-		<div class="container">
-			<a
-				class="navbar-brand"
-				href="{{ url_for('index') }}"
-				>eBook 📖</a
-			>
-			<button
-				class="navbar-toggler"
-				type="button"
-				data-bs-toggle="collapse"
-				data-bs-target="#menuNavbar"
-				aria-controls="menuNavbar"
-				aria-expanded="true"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div
-				class="navbar-collapse collapse show"
-				id="menuNavbar">
-				<ul class="navbar-nav me-auto">
-					<li class="nav-item dropdown">
-						<a
-							class="nav-link dropdown-toggle"
-							data-bs-toggle="dropdown"
-							href="#"
-							role="button"
-							aria-haspopup="true"
-							aria-expanded="false"
-							>Categories</a
-						>
-						<div class="dropdown-menu">
-							{% for item in categories %}
-							<a
-								class="dropdown-item"
-								href=""
-								>{{ item.name }}</a
-							>
-							{% endfor %}
-						</div>
-					</li>
-					<li class="nav-item">
-						<a
-							class="nav-link"
-							href="#"
-							>Collections</a
-						>
-					</li>
-					<li class="nav-item">
-						<a
-							class="nav-link"
-							href=""
-							>About</a
-						>
-					</li>
-				</ul>
-				<form class="d-flex">
-					<input
-						class="form-control me-sm-2"
-						type="search"
-						placeholder="Search" />
-					<button
-						class="btn btn-secondary my-2 my-sm-0"
-						type="submit">
-						Search
-					</button>
-				</form>
-			</div>
-		</div>
-	</nav>
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container">
+            <!-- Navbar Brand with Book Icon -->
+            <a class="navbar-brand d-flex align-items-center text-light" href="#">
+                <i class="fas fa-book me-2" style="color: #f8f9fa;"></i> <!-- Book Icon -->
+                DAHATA BOOKSTORE
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Categories</a>
+                        <div class="dropdown-menu">
+                            {% for c in categories %}
+                                <a class="dropdown-item" href="/?cate_id={{c.id}}">{{ c.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-success" href="/login">Đăng nhập</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/register">Đăng ký</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-success" href="/">
+                            <img src="{{ current_user.avatar }}" width="40" class="rounded-circle" alt="{{ current_user.name }}"/>
+                            Chào <span class="text-info">{{ current_user.name }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/logout">Đăng xuất</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <form class="d-flex me-3" method="get">
+                        <input class="form-control me-2" type="text" name="kw" placeholder="Nhập từ khóa...">
+                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Tìm</button>
+                    </form>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/cart">&#128722; <span class="badge bg-danger cart-counter">{{ cart_stats.total_quantity }}</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 </header>

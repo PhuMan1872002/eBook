@@ -1,183 +1,116 @@
 {% block content %}
 <style>
-    footer{
+    footer {
+        background-color: #002244;
+        color: #ddd;
+        padding: 40px 0;
+        position: relative;
+        width: 100%;
+    }
 
-    background-color:#000022;
-    color:dark;
-    position:relative;
-    bottom:0;
-   width:100%;
-   height:auto;
-   padding:5px;
- }
-     footer ul{
-    list-style-type:none;
- }
+    footer .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
 
- footer ul li{
-    padding:5px 0 ;
- }
+    footer h2 {
+        color: #fff;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
 
- footer ul a{
-    text-decoration:none;
-    color:dark;
- }
+    footer p, footer a {
+        color: #ddd;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
 
-footer .container{
-    justify-content: space-between;
-    flex-wrap:wrap;
-}
+    footer a:hover {
+        color: #ff5722;
+        text-decoration: underline;
+    }
 
-footer i{
-    padding:0 15px 0 0;
-}
+    footer .icons li {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
 
-.size{
-    font-size:17px;
-}
+    footer .icons li a {
+        color: #fff;
+        background-color: #333;
+        border-radius: 50%;
+        padding: 10px;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 20px;
+    }
 
-.container > div{
-    width:var(--width);
-    padding:5px;
-}
+    footer .icons li a:hover {
+        background-color: #ff5722;
+    }
 
-.container .aboutus{
-    width:50%;
-}
+    .formemail input.email {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: none;
+        margin-top: 10px;
+    }
 
-.container h2 {
-    padding:10px 0;
-    position:relative;
-    color:#555;
-}
+    .formemail button {
+        background-color: #ff5722;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-.container p {
-    padding:10px 0;
-    position:relative;
-    color:#555;
-}
-
-.container1 p {
-    padding:10px 0;
-    position:relative;
-    color:#555;
-}
-
-.container h2::after{
-    content:"";
-    height:2px;
-    width:50px;
-    background-color:#FF0000;
-    position:absolute;
-    display:block;
-}
-
-.aboutus ul{
-    margin-top:20px;
-}
-
-.aboutus .icons li{
-    margin-right:10px;
-    border-radius:4px;
-    background-color:#222;
-    width:40px;
-    height:40px;
-    padding-top:0;
-}
-
-.aboutus .icons .fa{
-    font-size:20px;
-    color:#fff;
-}
-
-.icons li  i{
-     display: flex;
-     width:55px;
-    height:40px;
-    justify-content: center;
-    align-items:center;
-}
-
-.icons li:hover {
-    background-color:#FF0000;
-}
-
-.formemail input.email{
-    height:40px;
-    width:240px;
-    font-size:18px;
-    padding:3px;
-}
-
-.formemail button{
-    font-size:20px;
-    padding:5px 20px;
-    margin-top:10px;
-    background-color:#222;
-    color:black;
-    border-radius:4px;
-    border:#FF0000;
-}
-
-.formemail button:hover{
-    background-color:#FF0000;
-    border:#FF0000;
-}
-
-section {
-    margin-top:100px;
-}
-
-.link >li > a:hover{
-    color:#555;
-}
-
-.contact i{
-    font-size:20px;
-    color:#555;
-}
-
-.flex2{
-    display:flex;
-    text-align:left;
-}
-
+    .formemail button:hover {
+        background-color: #e64a19;
+    }
 </style>
+
 <footer id="lienhe">
-    <div class="size container flex2">
-            <div class="aboutus box">
-                <h2>Về chúng tôi</h2>
-                <p class="size">Tại Dahata Bookstore, chúng tôi tin rằng sách có sức mạnh thay đổi cuộc sống và mở ra cánh cửa cho sự hiểu biết và sự phát triển cá nhân. Sứ mệnh của chúng tôi là truyền cảm hứng, khuyến khích sự sáng tạo và tạo ra một cộng đồng đam mê về sách.</p>
-            </div>
-
-            <div class="contacts box">
-                <h2>Thông tin liên hệ</h2>
-                <ul class="contact">
-                    <li><span class="flex2 address" style="color:#fff">
-                            <i class="fa fa-map-marker size"></i>
-                            Đường số 1 <br>
-                            Quận 1 <br>
-                            Thành Phố Hồ Chí Minh Việt Nam </span>
-                    </li>
-
-                    <li>
-                        <span class="flex2">
-                            <i class="size fa fa-phone"></i>
-                            <p> <a href="#">+84 123 456 789</a>
-                                <br>
-                                <a href="#">+84 987 654 321</a>
-                            </p>
-                        </span>
-                    </li>
-
-                    <li>
-                        <span class="flex2">
-                            <i class="<i class="fas fa-envelope"></i></i>
-                            <a href="#">diachiemail@gmail.com</a>
-                        </span>
-                    </li>
-                </ul>
-            </div>
+    <div class="container">
+        <div class="aboutus box">
+            <h2>Về chúng tôi</h2>
+            <p>Tại Dahata Bookstore, chúng tôi tin rằng sách có sức mạnh thay đổi cuộc sống và mở ra cánh cửa cho sự hiểu biết và sự phát triển cá nhân. Sứ mệnh của chúng tôi là truyền cảm hứng, khuyến khích sự sáng tạo và tạo ra một cộng đồng đam mê về sách.</p>
         </div>
+
+        <div class="contacts box">
+            <h2>Thông tin liên hệ</h2>
+            <ul class="contact">
+                <li><span><i class="fa fa-map-marker"></i> Đường số 1, Quận 1, Thành Phố Hồ Chí Minh, Việt Nam</span></li>
+                <li><span><i class="fa fa-phone"></i> <a href="tel:+84123456789">+84 123 456 789</a></span></li>
+                <li><span><i class="fa fa-phone"></i> <a href="tel:+84987654321">+84 987 654 321</a></span></li>
+                <li><span><i class="fa fa-envelope"></i> <a href="mailto:diachiemail@gmail.com">diachiemail@gmail.com</a></span></li>
+            </ul>
+        </div>
+
+        <div class="formemail box">
+            <h2>Đăng ký nhận tin</h2>
+            <form>
+                <input type="email" class="email" placeholder="Nhập email của bạn...">
+                <button type="submit">Đăng ký</button>
+            </form>
+        </div>
+
+        <div class="social box">
+            <h2>Kết nối với chúng tôi</h2>
+            <ul class="icons">
+                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+            </ul>
+        </div>
+    </div>
 </footer>
 {% endblock %}
