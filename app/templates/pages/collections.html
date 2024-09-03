@@ -1,0 +1,76 @@
+{% extends 'layouts/base.html' %} {% block content %}
+<section class="my-2 py-3">
+	<h1>Collections</h1>
+	<hr class="dropdown-divider" />
+
+	{% if books.items %}
+	<section class="row my-2 g-4">
+		{% for i in books.items %}
+		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+			<div class="card border-secondary shadow-sm">
+				<a href="{{ url_for('detail', id=i.id )}}">
+					<img
+						src="{{ url_for('static', filename='images/' ~ i.image) }}"
+						class="card-img-top"
+						alt="{{ i.title }}" />
+				</a>
+				<div class="card-body">
+					<h5 class="card-title">{{ i.title }}</h5>
+					<p class="card-text">
+						{% for t in i.tags %}
+						<span class="badge rounded-pill bg-primary"
+							>{{ t.name }}</span
+						>
+						{% endfor %}
+					</p>
+					<p class="card-text">
+						<strong>Price:</strong> {{ format_price(i.price) }}
+					</p>
+					<a
+						href="#"
+						class="btn btn-outline-primary"
+						>🛒</a
+					>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</section>
+
+	<div>
+		<ul class="pagination justify-content-center">
+			<li class="page-item">
+				<a
+					class="page-link {% if not books.has_prev %}disabled{% endif %}"
+					href="{{ url_for('collections', page=books.prev_num) }}"
+					>&laquo;</a
+				>
+			</li>
+
+			{% for number in books.iter_pages() %}
+			<li class="page-item">
+				<a
+					class="page-link {% if books.page == number %}active{% else %} {% endif %}"
+					href="{{ url_for('collections', page=number) }}">
+					{{ number }}
+				</a>
+			</li>
+			{% endfor %}
+
+			<li class="page-item">
+				<a
+					class="page-link {% if not books.has_next %}disabled{% endif %}"
+					href="{{ url_for('collections', page=books.next_num) }}"
+					>&raquo;</a
+				>
+			</li>
+		</ul>
+	</div>
+	{% else %}
+	<section class="vh-100 d-flex flex-column justify-content-center align-items-center">
+		<strong><em>Not found items...Try again!!!</em></strong>
+	</section>
+	{% endif %}
+</section>
+
+{% endblock %}

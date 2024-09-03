@@ -11,7 +11,7 @@ class Config(object):
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(base_dir, 'database', 'ebook.db')
-    PAGE_SIZE = 2
+    PAGE_SIZE = 10
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
     MAIL_USE_TLS = False

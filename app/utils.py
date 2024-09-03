@@ -1,3 +1,4 @@
+import cloudinary.uploader, hashlib
 from flask import request, session
 
 
@@ -32,3 +33,12 @@ def cart_stats(cart):
 #         "total_amount": total_amount,
 #         "total_quantity": total_quantity
 #     }
+
+
+def format_price(amount, currency="$"):
+    return f"{currency}{amount:.2f}"
+
+
+def hash_avatar_url(email=None, size=128, default='identicon', rating='g'):
+    digest = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
+    return f"https://www.gravatar.com/avatar/{digest}?s={size}&d={default}&r={rating}"

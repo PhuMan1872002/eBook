@@ -1,0 +1,48 @@
+{% extends 'layouts/base.html' %} {% block title %} {{ current_user.full_name() }} {% endblock %} {%
+block content %}
+<section class="my-2 py-3">
+	<h1>
+		<img
+			src="{{ current_user.avatar }}"
+			class="img-thumbnail rounded-circle"
+			alt="{{ current_user.username }}"
+			height="60"
+			width="60" />
+		{{ current_user.username }}
+	</h1>
+	<hr class="dropdown-divider" />
+
+	<section class="row my-2 g-4">
+		<div class="col-md-8">
+			<table class="table table-hover text-center">
+				<tbody>
+					<tr>
+						<th>Full Name</th>
+						<td>{{ current_user.full_name() }}</td>
+					</tr>
+                    <tr>
+						<th>Email</th>
+						<td>{{ current_user.email }}</td>
+					</tr>
+                    <tr>
+						<th></th>
+						<td></td>
+					</tr>
+                    <tr>
+						<th></th>
+						<td></td>
+					</tr>
+                    <tr>
+						<th></th>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+        <div class="col-md-4">
+            
+        </div>
+	</section>
+</section>
+{% endblock %}

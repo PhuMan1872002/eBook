@@ -1,0 +1,46 @@
+{% extends 'layouts/base.html' %} {% block title %}{{ book.title }}{% endblock %} {% block content
+%}
+<section class="my-2 py-3">
+	<h1>Book Detail: {{ book.title }}</h1>
+	<hr class="dropdown-divider" />
+
+	{% if book %}
+	<section class="row py-4">
+		<div class="col col-md-4">
+			<div class="card border-secondary shadow-sm">
+				<img
+					src="{{ url_for('static', filename='images/' ~ book.image) }}"
+					class="card-img-top"
+					alt="{{ book.title }}" />
+				<div class="card-body">
+					<h5 class="card-title">{{ book.title }}</h5>
+					<p class="card-text">
+						{% for t in book.tags %}
+						<span class="badge rounded-pill bg-primary"
+							>{{ t.name }}</span
+						>
+						{% endfor %}
+					</p>
+					<p class="card-text">
+						<strong>Price:</strong> {{ format_price(book.price)
+						}}
+					</p>
+					<a
+						href="#"
+						class="btn btn-outline-primary"
+						>🛒</a
+					>
+				</div>
+			</div>
+		</div>
+
+		<div class="col col-md-8"></div>
+	</section>
+	{% else %}
+	<section class="vh-100 d-flex flex-column justify-content-center align-items-center">
+		<strong><em>Not found items...Try again!!!</em></strong>
+	</section>
+	{% endif %}
+</section>
+
+{% endblock %}

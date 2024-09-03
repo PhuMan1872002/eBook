@@ -1,14 +1,15 @@
 from flask_admin import Admin, BaseView, expose, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
-from flask_login import current_user
+from flask_login import current_user, logout_user
 from flask_babel import Babel
 from sqlalchemy.event import listens_for
-from flask import url_for
+from flask import url_for, redirect
 from markupsafe import Markup
 from .widgets import CKTextAreaField
 from .utils import get_locale
 from .models import  db, RoleEnum, Category, User, Book, Tag
+from .dao import stats_books, count_books
 
 import os, os.path as op
 
@@ -37,10 +38,8 @@ def del_image(mapper, connection, target):
 
 
 class AuthModelView(BaseView):
-    # def is_accessible(self):
-    #     return current_user.is_authenticated and current_user.role == RoleEnum.ADMIN
-    
-    pass
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.role == RoleEnum.ADMIN
 
 
 class EBookModelView(AuthModelView, ModelView):
@@ -113,11 +112,20 @@ class TagModelView(EBookModelView):
 class AnalyticsView(AuthModelView):
     @expose('/')
     def index(self):
-        return self.render('admin/analytics.html')
+        return self.render('admin/analytics.html',
+                        categories=stats_books(),
+                        total_books=count_books())
     
     
 class UploadFilesView(AuthModelView, FileAdmin):
     pass
+
+
+class LogoutView(AuthModelView):
+    @expose('/')
+    def index(self):
+        logout_user()
+        return redirect('/admin')
 
 
 babel = Babel(locale_selector=get_locale)
@@ -128,3 +136,4 @@ admin_manager.add_view(BookModelView(Book, db.session, category="Collections"))
 admin_manager.add_view(TagModelView(Tag, db.session, category="Collections"))
 admin_manager.add_view(AnalyticsView(name='Analytics', endpoint='analytics', category="Utils")) 
 admin_manager.add_view(UploadFilesView(path, '/static/', name='Files', endpoint="files", category="Utils"))
+admin_manager.add_view(LogoutView(name="Log Out", category="Settings", endpoint="logout"))

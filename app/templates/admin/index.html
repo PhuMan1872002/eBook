@@ -1,6 +1,6 @@
 {% extends 'admin/master.html' %} {% block body %}
 <div class="d-flex justify-content-center">
-	{% if current_user.is_authenticated %}
+	{% if current_user.is_authenticated and current_user.is_admin() %}
 	<div class="jumbotron">
 		<h1 class="display-5">Welcome to eBook Administrator Dashboard</h1>
 		<p class="lead">Manage your books, users, orders, and more from here.</p>
@@ -8,7 +8,7 @@
 		<p>Use the navigation bar to access different sections.</p>
 		<a
 			class="btn btn-primary"
-			href=""
+			href="{{ url_for('analytics.index') }}"
 			role="button"
 			>Statistics Dashboard</a
 		>
@@ -20,7 +20,7 @@
 			<h1 class="fw-bold text-center">Log In</h1>
 			<form
 				method="POST"
-				action="">
+				action="{{ url_for('login_admin') }}">
 				<div class="form-group">
 					<label for="email">Email</label>
 					<input
