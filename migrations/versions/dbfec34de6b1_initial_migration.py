@@ -1,8 +1,8 @@
 """Initial migration.
 
-Revision ID: b568c7aa9c27
+Revision ID: dbfec34de6b1
 Revises: 
-Create Date: 2024-08-29 13:29:55.695614
+Create Date: 2024-09-04 14:19:08.374844
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b568c7aa9c27'
+revision = 'dbfec34de6b1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,20 +38,23 @@ def upgrade():
     sa.Column('last_name', sa.String(length=50), nullable=True),
     sa.Column('username', sa.String(length=50), nullable=False),
     sa.Column('email', sa.String(length=100), nullable=False),
-    sa.Column('password', sa.Text(), nullable=False),
+    sa.Column('password', sa.Text(), nullable=True),
     sa.Column('avatar', sa.Text(), nullable=True),
     sa.Column('role', sa.Enum('USER', 'ADMIN', 'EMPLOYEE', name='roleenum'), nullable=True),
+    sa.Column('reset_code', sa.String(length=7), nullable=True),
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('date_created', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('reset_code'),
     sa.UniqueConstraint('username')
     )
     op.create_table('book',
     sa.Column('title', sa.String(length=80), nullable=True),
     sa.Column('price', sa.Float(), nullable=True),
     sa.Column('image', sa.Text(), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
     sa.Column('category_id', sa.Integer(), nullable=True),
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('active', sa.Boolean(), nullable=True),

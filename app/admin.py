@@ -8,7 +8,7 @@ from flask import url_for, redirect
 from markupsafe import Markup
 from .widgets import CKTextAreaField
 from .utils import get_locale
-from .models import  db, RoleEnum, Category, User, Book, Tag
+from .models import  db, RoleEnum, Category, User, Book, Tag, Comment, Like
 from .dao import stats_books, count_books
 
 import os, os.path as op
@@ -109,6 +109,18 @@ class TagModelView(EBookModelView):
     column_editable_list = ["name"] + EBookModelView.column_editable_list
  
  
+class CommentModelView(EBookModelView):
+    column_list = ["content"] + EBookModelView.column_list
+    column_sortable_list = ["content"] + EBookModelView.column_sortable_list
+    column_editable_list = ["content"] + EBookModelView.column_editable_list
+ 
+
+class LikeModelView(EBookModelView):
+    column_list = EBookModelView.column_list
+    column_sortable_list = EBookModelView.column_sortable_list
+    column_editable_list = EBookModelView.column_editable_list
+
+
 class AnalyticsView(AuthModelView):
     @expose('/')
     def index(self):
@@ -134,6 +146,8 @@ admin_manager.add_view(UserModelView(User, db.session, category="Collections"))
 admin_manager.add_view(CategoryModelView(Category, db.session, category="Collections"))
 admin_manager.add_view(BookModelView(Book, db.session, category="Collections"))
 admin_manager.add_view(TagModelView(Tag, db.session, category="Collections"))
+admin_manager.add_view(CommentModelView(Comment, db.session, category="Collections"))
+admin_manager.add_view(LikeModelView(Like, db.session, category="Collections"))
 admin_manager.add_view(AnalyticsView(name='Analytics', endpoint='analytics', category="Utils")) 
 admin_manager.add_view(UploadFilesView(path, '/static/', name='Files', endpoint="files", category="Utils"))
 admin_manager.add_view(LogoutView(name="Log Out", category="Settings", endpoint="logout"))

@@ -1,5 +1,6 @@
 from sqlalchemy import extract, func
-from app.models import User, Category, Book, db
+from flask_login import current_user
+from app.models import User, Category, Book, db, Comment, Like
 from .config import Config
 
 def load_user(user_id):
@@ -72,6 +73,28 @@ def create_user(username, email, password, **kwargs):
     return user
 
 
+def reset_password(username, new_password):
+    user = User.query.filter(User.username.__eq__(username)).first()
+    user.set_password(password=new_password)
+    user.save()
+    return user
+
+
+def check_account(email=None, username=None, otp=None):
+    queries = User.query.filter(User.active.__eq__(True))
+    
+    if email:
+        queries = queries.filter(User.email.__eq__(email))
+    
+    if username:
+        queries = queries.filter(User.username.__eq__(username))
+        
+    if otp:
+        queries= queries.filter(User.reset_code.__eq__(otp))
+    
+    return queries.first()
+
+
 def auth_user(email, password):
     user = User.query.filter(User.email.__eq__(email)).first()
     return user if user and user.check_password(password=password) else None
@@ -85,3 +108,18 @@ def stats_books():
 
 def count_books():
     return Book.query.count()
+
+
+def count_comments(book):
+    return Comment.query.filter(Comment.book_id.__eq__(book)).count()
+
+
+def load_comments(book, page=1, per_page=3):
+    queries = Comment.query.filter(Comment.book_id.__eq__(book)).order_by(Comment.id.desc())
+    return queries.paginate(page=page, per_page=per_page)
+
+
+def add_comment(content, book):
+    comment = Comment(book_id=book, content=content, user=current_user)
+    comment.save()
+    return comment

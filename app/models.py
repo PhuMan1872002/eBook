@@ -27,6 +27,7 @@ class BaseModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
+
 class User(BaseModel, UserMixin):
     first_name = Column(String(50), nullable=True)
     last_name = Column(String(50), nullable=True)
@@ -34,7 +35,13 @@ class User(BaseModel, UserMixin):
     email = Column(String(100), nullable=False, unique=True)
     password = Column(Text)
     avatar = Column(Text, default=None)
+    address = Column(String(125), nullable=True)
+    phone = Column(String(10), nullable=True)
     role = Column(Enum(RoleEnum), default=RoleEnum.USER)
+    last_seen = Column(DateTime)
+    reset_code = Column(String(7), nullable=True, unique=True)
+    comments = relationship('Comment', backref='user', lazy=True)
+    likes = relationship('Like', backref='user', lazy=True)
     
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -84,6 +91,27 @@ class Book(BaseModel):
     description = Column(Text)
     category_id = Column(Integer, ForeignKey(Category.id))
     tags = relationship('Tag', secondary='book_tag', backref='books', lazy=True)
+    comments = relationship('Comment', backref='book', lazy=True)
+    likes = relationship('Like', backref='book', lazy=True)
     
     def __str__(self):
         return self.title
+    
+
+class Interaction(BaseModel):
+    __abstract__ = True
+    
+    book_id = Column(Integer, ForeignKey(Book.id))
+    user_id = Column(Integer, ForeignKey(User.id))
+
+
+class Comment(Interaction):
+    content = Column(Text)
+
+    def __str__(self):
+        return f'{self.content[:20]}...'
+    
+
+class Like(Interaction):
+    def __str__(self):
+        return self.active

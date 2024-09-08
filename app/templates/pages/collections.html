@@ -52,7 +52,11 @@
 				<a
 					class="page-link {% if books.page == number %}active{% else %} {% endif %}"
 					href="{{ url_for('collections', page=number) }}">
-					{{ number }}
+					{% if number %}
+						{{ number }}
+					{% else %}
+						. . .
+					{% endif %}
 				</a>
 			</li>
 			{% endfor %}

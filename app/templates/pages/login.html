@@ -5,7 +5,7 @@
 
 		<form
 			method="POST"
-			action="{{ url_for('login') }}"
+			action="{{ url_for('login', next=next) }}"
 			class="py-4">
 			<h1 class="fw-bold text-center">Log In</h1>
 
@@ -56,11 +56,70 @@
 				>
 			</div>
 
+			<div class="mb-3">
+				<a
+					data-bs-toggle="offcanvas"
+					href="#offcanvasForgot"
+					role="button"
+					aria-controls="offcanvasForgot">
+					Forgot password?
+				</a>
+			</div>
+
 			<button
 				type="submit"
 				class="btn btn-primary">
 				Log In
 			</button>
+		</form>
+
+		<div
+				class="offcanvas offcanvas-start"
+				tabindex="-1"
+				id="offcanvasForgot"
+				aria-labelledby="offcanvasForgotLabel">
+				<div class="offcanvas-header">
+					<h5
+						class="offcanvas-title"
+						id="offcanvasForgotLabel">
+						Find Your Account
+					</h5>
+					<button
+						type="button"
+						class="btn-close text-reset"
+						data-bs-dismiss="offcanvas"
+						aria-label="Close"></button>
+				</div>
+				<div class="offcanvas-body">
+					<form
+			method="POST"
+			action="{{ url_for('forgot_password') }}"
+			class="py-4">
+			<h1 class="fw-bold text-center">Forgot Password</h1>
+
+			<div class="mb-3 form-group">
+				<label for="find_email">Email</label>
+				<input
+					type="email"
+					class="form-control"
+					id="find_email"
+					name="find_email"
+					required />
+				<small
+					id="find_email"
+					class="form-text text-muted">
+					Your email address will be used for authentication and
+					communication purposes.
+				</small>
+			</div>
+
+			<button
+				type="submit"
+				class="btn btn-primary">
+				Find Account
+			</button>
+				</div>
+			</div>
 		</form>
 	</div>
 </div>

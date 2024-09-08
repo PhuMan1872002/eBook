@@ -6,7 +6,7 @@
 
 	{% if book %}
 	<section class="row py-4">
-		<div class="col col-md-4">
+		<div class="col-sm-12 col-md-5">
 			<div class="card border-secondary shadow-sm">
 				<img
 					src="{{ url_for('static', filename='images/' ~ book.image) }}"
@@ -34,7 +34,98 @@
 			</div>
 		</div>
 
-		<div class="col col-md-8"></div>
+		<div class="col-sm-12 col-md-7">
+			<h3>All Comments (<span id="amount">{{ count }}</span>)</h3>
+			
+			<div id="comments">
+				{% for i in comments.items %}
+					<div class="card my-3">
+						<div class="card-header d-flex align-items-center">
+							<img
+								src="{{ i.user.avatar }}"
+								class="rounded-circle me-2"
+								alt="{{ i.user.username }}"
+								width="50"
+								height="50" />
+							<div>
+								<h6 class="mb-0">{{ i.user.full_name() }}</h6>
+								<small class="text-muted"
+									>{{ moment(i.date_created).fromNow() }}</small
+								>
+							</div>
+						</div>
+
+						<div class="card-body">
+							<p class="card-text">{{ i.content }}</p>
+						</div>
+
+						<div class="card-footer text-end">
+							<button class="btn btn-sm btn-outline-secondary">
+								Like
+							</button>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+
+			<div>
+				<ul class="pagination justify-content-center">
+						<li class="page-item"></li>
+				<a
+					class="page-link {% if not comments.has_prev %}disabled{% endif %}"
+					href="{{ url_for('detail', id=book.id, comment=comments.prev_num) }}"
+					>&laquo;</a
+				>
+				</li>
+
+			{% for number in comments.iter_pages() %}
+			<li class="page-item">
+				<a
+					class="page-link {% if comments.page == number %}active{% else %} {% endif %}"
+					href="{{ url_for('detail', id=book.id, comment=number) }}">
+					{% if number %}
+						{{ number }}
+					{% else %}
+						. . .
+					{% endif %}
+				</a>
+			</li>
+			{% endfor %}
+
+			<li class="page-item">
+				<a
+					class="page-link {% if not comments.has_next %}disabled{% endif %}"
+					href="{{ url_for('detail', id=book.id, comment=comments.next_num) }}"
+					>&raquo;</a
+				>
+			</li>
+					</ul>
+			</div>
+			{% if current_user.is_authenticated %}
+			<p>
+				<textarea
+					class="form-control"
+					id="content"
+					placeholder="Enter content . . ."
+					cols="60"
+					rows="5"></textarea>
+			</p>
+
+			<p>
+				<button
+					class="btn btn-outline-primary"
+					onclick="addComment({{ book.id }})">
+					Comment
+				</button>
+			</p>
+			{% else %}
+			<a
+				href="{{ url_for('login', next=url_for('detail', id=book.id)) }}"
+				class="btn btn-outline-primary"
+				>Log In</a
+			>
+			{% endif %}
+		</div>
 	</section>
 	{% else %}
 	<section class="vh-100 d-flex flex-column justify-content-center align-items-center">
@@ -43,4 +134,5 @@
 	{% endif %}
 </section>
 
+<script src="{{ url_for('static', filename='js/details.js') }}"></script>
 {% endblock %}
