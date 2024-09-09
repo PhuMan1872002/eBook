@@ -1,6 +1,10 @@
-import cloudinary.uploader, hashlib
+import cloudinary.uploader, hashlib, csv
 from flask import request, session
 from .config import Config
+
+
+def export():
+    pass
 
 
 def get_locale():
@@ -21,6 +25,7 @@ def cart_stats(cart):
         "total_amount": total_amount,
         "total_quantity": total_quantity
     }
+
 
 # def cashier_stats(cartCashier):
 #     total_amount, total_quantity = 0, 0

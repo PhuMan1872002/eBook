@@ -84,7 +84,7 @@
 							aria-haspopup="true"
 							aria-expanded="false">
 							{% if current_user.is_authenticated %}
-								<img
+							<img
 								src="{{ current_user.avatar }}"
 								class="img-thumbnail rounded-circle"
 								height="40"
@@ -93,16 +93,16 @@
 						</a>
 						<div class="dropdown-menu">
 							{% if current_user.is_authenticated %}
-								<a
-									class="dropdown-item"
-									href="{{ url_for('profile') }}"
-									>{{ current_user.email }}</a
-								>
-								<a
-									class="dropdown-item"
-									href="{{ url_for('logout') }}"
-									>Log Out</a
-								>
+							<a
+								class="dropdown-item"
+								href="{{ url_for('profile') }}"
+								>{{ current_user.email }}</a
+							>
+							<a
+								class="dropdown-item"
+								href="{{ url_for('logout') }}"
+								>Log Out</a
+							>
 							{% else %}
 							<a
 								class="dropdown-item"
@@ -119,17 +119,16 @@
 					</li>
 
 					<li class="nav-item">
-						<a
-							class="nav-link"
-							href=""
-							>🛒
+						<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCart" role="button" aria-controls="offcanvasCart">
+🛒
 							<span class="badge bg-danger cart-counter"
 								>1</span
-							></a
-						>
+							>
+</a>
 					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 </header>
+
