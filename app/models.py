@@ -42,6 +42,7 @@ class User(BaseModel, UserMixin):
     reset_code = Column(String(7), nullable=True, unique=True)
     comments = relationship('Comment', backref='user', lazy=True)
     likes = relationship('Like', backref='user', lazy=True)
+    orders = relationship('Order', backref='user', lazy=True)
     
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -93,10 +94,24 @@ class Book(BaseModel):
     tags = relationship('Tag', secondary='book_tag', backref='books', lazy=True)
     comments = relationship('Comment', backref='book', lazy=True)
     likes = relationship('Like', backref='book', lazy=True)
+    details = relationship('OrderDetails', backref='book', lazy=True)
     
     def __str__(self):
         return self.title
     
+
+class Order(BaseModel):
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    details = relationship('OrderDetails', backref='order', lazy=True)
+
+
+class OrderDetails(BaseModel):
+    quantity = Column(Integer, default=0)
+    price = Column(Float, default=0)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+
+
 
 class Interaction(BaseModel):
     __abstract__ = True

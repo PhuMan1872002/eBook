@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, flash, url_for, jsonify, session, jsonify, json
+from flask import render_template, request, redirect, flash, url_for, jsonify, session, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from .dao import load_books, load_book, auth_user, check_account, create_user, reset_password, load_comments, count_comments, add_comment
 from .utils import upload_avatar, send_email, generate_reset_code, cart_stats
@@ -200,32 +200,28 @@ def comment():
 
 
 def cart():
-    data = json.loads(request.data)
-    book_id = data.get("book_id")
-    name = data.get("name")
-    price = data.get("price")
-    if "cart" not in session or session['cart'] == None:
-        session["cart"] = {}
+    data = request.json
+    id = str(data.get('id'))
+    name = data.get('title')
+    price = data.get('price')
 
-    cart = session["cart"]
+    cart = session.get('cart')
+    
+    if not cart:
+        cart = {}
 
-    book_key = str(book_id)
-    if book_key in cart:
-        cart[book_key]["quantity"] = cart[book_key]["quantity"] + 1
+    if id in cart:
+        cart[id]["quantity"] = cart[id]["quantity"] + 1
     else:
-        cart[book_key] = {
-            "id": book_id,
-            "name": name,
+        cart[id] = {
+            "id": id,
+            "title": name,
             "price": price,
             "quantity": 1
         }
 
     session["cart"] = cart
-    q = 0
-    s = 0
-    for c in list(session["cart"].values()):
-        q = q + c['quantity']
-        s = s + c['quantity'] * c['price']
 
-    return jsonify({"success": 1, "quantity": q, 'sum': s})
+    return jsonify(cart_stats(cart))
+
 

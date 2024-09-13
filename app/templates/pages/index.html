@@ -70,6 +70,11 @@
 						class="btn btn-outline-primary"
 						>🛒</a
 					>
+					<a
+						href="#"
+						class="btn btn-outline-primary"
+						>📦</a
+					>
 				</div>
 			</div>
 		</div>
@@ -104,9 +109,14 @@
 						<strong>Price:</strong> {{ format_price(i.price) }}
 					</p>
 					<a
-						href="#"
+						onclick="addToCart({{ i.id }}, '{{ i.title }}', {{ i.price }})"
 						class="btn btn-outline-primary"
 						>🛒</a
+					>
+					<a
+						href="#"
+						class="btn btn-outline-primary"
+						>📦</a
 					>
 				</div>
 			</div>

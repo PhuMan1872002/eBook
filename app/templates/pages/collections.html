@@ -31,6 +31,11 @@
 						class="btn btn-outline-primary"
 						>🛒</a
 					>
+					<a
+						href="#"
+						class="btn btn-outline-primary"
+						>📦</a
+					>
 				</div>
 			</div>
 		</div>
@@ -52,11 +57,7 @@
 				<a
 					class="page-link {% if books.page == number %}active{% else %} {% endif %}"
 					href="{{ url_for('collections', page=number) }}">
-					{% if number %}
-						{{ number }}
-					{% else %}
-						. . .
-					{% endif %}
+					{% if number %} {{ number }} {% else %} . . . {% endif %}
 				</a>
 			</li>
 			{% endfor %}

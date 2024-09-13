@@ -15,9 +15,8 @@ app.add_url_rule('/register', view_func=controllers.register, methods=['get', 'p
 app.add_url_rule('/change-password', view_func=controllers.change_password, methods=['post'])
 app.add_url_rule('/forgot-password', view_func=controllers.forgot_password, methods=['post'])
 app.add_url_rule('/reset-password', view_func=controllers.reset_password, methods=['get', 'post'])
-app.add_url_rule('/api/comments/', view_func=controllers.comment, methods=['post'])
-# app.add_url_rule('/cart', 'cart', controllers.cart)
-# app.add_url_rule('/api/cart', 'add-cart', controllers.add_to_cart, methods=['post'])
+app.add_url_rule('/api/comments/', view_func=controllers.comment, methods=['post', 'delete'])
+app.add_url_rule('/api/cart/', view_func=controllers.cart, methods=['post'])
 # app.add_url_rule('/api/cart/<product_id>', 'update-cart', controllers.update_cart, methods=['put'])
 # app.add_url_rule('/api/cart/<product_id>', 'delete-cart', controllers.delete_cart, methods=['delete'])
 # app.add_url_rule('/api/pay', 'pay', controllers.pay)
@@ -27,7 +26,6 @@ app.add_url_rule('/api/comments/', view_func=controllers.comment, methods=['post
 # app.add_url_rule('/api/cartCashier/<product_id>', 'delete-cart-cashier', controllers.delete_cart_emp, methods=['delete'])
 # app.add_url_rule('/api/payCashier', 'pay-cashier', controllers.pay_emp)
 # app.add_url_rule('/api/printBill', 'print-bill', controllers.print_bill)
-# app.add_url_rule('/api/products/<id>/comments', 'comment-add', controllers.add_comment, methods=['post'])
 
 
 @app.before_request
@@ -50,7 +48,8 @@ def common_responses():
                     page=request.args.get('page', 1, type=int),
                     category=request.args.get('category', type=int),
                     keyword=request.args.get('keyword')
-                )
+                ),
+                cart=utils.cart_stats(session.get('cart'))
             )
 
 
