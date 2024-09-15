@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, flash, url_for, jsonify, session, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
-from .dao import load_books, load_book, auth_user, check_account, create_user, reset_password, load_comments, count_comments, add_comment
+from .dao import load_books, load_book, auth_user, check_account, create_user, reset_password, load_comments, count_comments, add_comment, save_receipt, load_orders
 from .utils import upload_avatar, send_email, generate_reset_code, cart_stats
 from .decorators import annonymous_user
 from app import mail
@@ -100,15 +100,14 @@ def register():
     return render_template('pages/register.html')
 
 
-@login_required
+
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
 
-@login_required
 def profile():
-    return render_template('pages/profile.html')
+    return render_template('pages/profile.html', orders=load_orders())
 
 
 @login_required
@@ -225,3 +224,25 @@ def cart():
     return jsonify(cart_stats(cart))
 
 
+def delete_cart(book_id):
+    cart = session.get('cart')
+    if cart and book_id in cart:
+        del cart[book_id]
+
+    session['cart'] = cart
+    return jsonify(cart_stats(cart))
+
+
+@login_required
+def pay_checkout():
+    cart = session.get('cart')
+
+    try:
+        save_receipt(cart)
+    except Exception as ex:
+        print(str(ex))
+        return jsonify({'status': 500})
+    else:
+        del session['cart']
+
+    return jsonify({'status': 200})

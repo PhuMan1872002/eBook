@@ -27,12 +27,12 @@ block content %}
 						<td>{{ current_user.email }}</td>
 					</tr>
 					<tr>
-						<th></th>
-						<td></td>
+						<th>Phone</th>
+						<td>{{ current_user.phone }}</td>
 					</tr>
 					<tr>
-						<th></th>
-						<td></td>
+						<th>Address</th>
+						<td>{{ current_user.address }}</td>
 					</tr>
 					<tr>
 						<th>Last seen</th>
@@ -40,6 +40,8 @@ block content %}
 					</tr>
 				</tbody>
 			</table>
+
+			<p>My Orders: {{ orders|length }}</p>
 		</div>
 
 		<div class="col-md-4">

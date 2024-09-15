@@ -24,21 +24,30 @@
 
 			{% if 'cart' in session and session['cart'] %}
 				{% for i in session['cart'].values() %}
-				<div class="card my-3">
+				<div class="card my-3" id="book{{i.id}}">
 					<div class="card-body">
 						<h5 class="card-title">{{ i.title }}</h5>
 						<p class="card-text">Price: {{ format_price(i.price) }}</p>
 						<p class="card-text">Amount: {{ i.quantity }} items</p>
-						<button class="btn btn-danger btn-sm">Remove</button>
+						<button onclick="deleteCart({{ i.id }})" class="btn btn-danger btn-sm">Remove</button>
 					</div>
 				</div>
 				{% endfor %}
 
 				<div>
-					<h5>Total items: {{ cart.total_quantity }}</h5>
-					<h5>Total price: {{ format_price(cart.total_amount) }}</h5>
+					<h5>Total items: <span class="quantity">{{ cart.total_quantity }}</span></h5>
+					<h5>Total price: <span class="amount">{{ format_price(cart.total_amount) }}</span></h5>
 				</div>
-
+				
+				{% if current_user.is_authenticated %}
+					<a onclick="pay()" class="btn btn-primary">Check Out</a>
+				{% else %}
+					<a
+						href="{{ url_for('login') }}"
+						class="btn btn-outline-primary"
+						>Log In</a
+					>
+				{% endif %}
 			{% else %}
 				<p>Not items in cart!!!</p>
 			{% endif %}

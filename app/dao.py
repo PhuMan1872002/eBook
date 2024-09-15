@@ -1,6 +1,6 @@
 from sqlalchemy import extract, func
 from flask_login import current_user
-from app.models import User, Category, Book, db, Comment, Like
+from app.models import User, Category, Book, db, Comment, Like, Order, OrderDetails
 from .config import Config
 
 def load_user(user_id):
@@ -123,3 +123,20 @@ def add_comment(content, book):
     comment = Comment(book_id=book, content=content, user=current_user)
     comment.save()
     return comment
+
+
+def save_receipt(cart):
+    if cart:
+        r = Order(user=current_user)
+        db.session.add(r)
+
+        for c in cart.values():
+            d = OrderDetails(quantity=c['quantity'], price=c['price'],
+                               order=r, book_id=c['id'])
+            db.session.add(d)
+
+        db.session.commit()
+        
+        
+def load_orders():
+    return Order.query.filter(Order.user.__eq__(current_user)).order_by(Order.id.desc()).all()
